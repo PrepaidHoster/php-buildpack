@@ -35,6 +35,18 @@ source $BP/compile-extensions/lib/common
 $BP/compile-extensions/bin/check_stack_support
 $BP/compile-extensions/bin/check_buildpack_version $BP $CACHE_DIR
 
+mkdir -p $CACHE_DIR/ac/
+mkdir -p /app/.apt/
+
+cd $CACHE_DIR/ac/
+wget $(apt-get install --reinstall --print-uris -qq nano | cut -d"'" -f2)
+wget $(apt-get install --reinstall --print-uris -qq screen | cut -d"'" -f2)
+wget $(apt-get install --reinstall --print-uris -qq nload | cut -d"'" -f2)
+
+for DEB in $(ls -1 $CACHE_DIR/ac/*.deb); do
+  dpkg -x $DEB /app/.apt/
+done
+
 env_vars=$($BP/compile-extensions/bin/build_path_from_supply $DEPS_DIR)
 for env_var in $env_vars; do
   export $env_var
